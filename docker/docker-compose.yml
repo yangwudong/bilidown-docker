@@ -1,0 +1,23 @@
+services:
+  bilidown:
+    image: ghcr.io/yangwudong/bilidown:latest
+    container_name: bilidown
+    ports:
+      - "8098:8098"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./download:/app/download
+      - ./data.db:/app/data.db
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8098/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
