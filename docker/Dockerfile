@@ -43,16 +43,25 @@ RUN CGO_ENABLED=1 go build -ldflags="-s -w" -o bilidown .
 FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg curl ca-certificates \
+    ffmpeg curl ca-certificates libayatana-appindicator3-1 \
     && rm -rf /var/lib/apt/lists/*
+
+# Install app to /opt so it stays outside the volume mount
+COPY --from=server /build/server/bilidown /opt/bilidown/bilidown
+COPY --from=server /build/server/static/ /opt/bilidown/static/
 
 WORKDIR /app
 
-COPY --from=server /build/server/bilidown .
-COPY --from=server /build/server/static/ ./static/
-
 RUN mkdir -p /app/download
+
+COPY <<'EOF' /usr/local/bin/entrypoint.sh
+#!/bin/sh
+# Ensure binary and static are up-to-date from the image
+cp -a /opt/bilidown/bilidown /opt/bilidown/static /app/
+exec /app/bilidown
+EOF
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 8098
 
-ENTRYPOINT ["./bilidown"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

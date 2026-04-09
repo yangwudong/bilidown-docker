@@ -23,7 +23,7 @@ Edit `docker-compose.yml` to customize:
 | `TZ` | `Asia/Shanghai` | Container timezone |
 | `ports` | `8098:8098` | Web UI port |
 | `./download` | — | Downloaded video files |
-| `./data.db` | — | SQLite database (login sessions, tasks) |
+| `bilidown-data` | — | Named volume for SQLite database (auto-created, persists login sessions and tasks) |
 
 ### Logging
 
@@ -62,4 +62,4 @@ docker build -f docker/Dockerfile -t bilidown https://github.com/iuroc/bilidown.
 
 ## Acknowledgements
 
-- [iuroc/bilidown](https://github.com/iuroc/bilidown) — upstream project
+Thanks to [iuroc/bilidown](https://github.com/iuroc/bilidown) for the excellent upstream project — this repository simply wraps it as a Docker image for easier deployment.
